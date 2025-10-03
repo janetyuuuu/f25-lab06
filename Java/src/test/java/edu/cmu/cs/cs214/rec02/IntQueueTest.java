@@ -83,6 +83,8 @@ public class IntQueueTest {
     @Test
     public void testDequeue() {
         // TODO: write your own unit test
+        assertNull(mQueue.dequeue());
+    
         for (int i = 0; i < testList.size(); i++) {
             mQueue.enqueue(testList.get(i));
         }
@@ -113,5 +115,43 @@ public class IntQueueTest {
         }
     }
 
+    @Test
+    public void testClear() {
+        for (int i = 0; i < testList.size(); i++) {
+            mQueue.enqueue(testList.get(i));
+        }
+    
+        assertEquals(testList.size(), mQueue.size());
+        mQueue.clear();
+        assertEquals(0, mQueue.size());
+        assertTrue(mQueue.isEmpty());
+    }
 
+    @Test
+    public void testEnsureCapacity() {
+        int i = 0;
+        // Fill to initial capacity (10)
+        for (; i < 10; i++) {
+            mQueue.enqueue(i);
+        }
+
+        // Dequeue one to advance head (wrap-around scenario when we keep enqueuing)
+        assertEquals(Integer.valueOf(0), mQueue.dequeue());
+
+        // Enqueue more to exceed capacity and trigger internal expansion
+        for (; i < 15; i++) {
+            mQueue.enqueue(i);
+        }
+
+        // Size should be 14: we had 9 after one dequeue, then +5 enqueues
+        assertEquals(14, mQueue.size());
+
+        // Verify FIFO order is maintained after expansion
+        for (int j = 1; j < 15; j++) {
+            assertEquals(Integer.valueOf(j), mQueue.dequeue());
+        }
+
+        // Extra safety check
+        assertTrue(mQueue.isEmpty());
+    }
 }
